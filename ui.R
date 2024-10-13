@@ -195,7 +195,10 @@ fluidPage(
                    selectInput("y_axis", "Sélectionnez l'axe Y :", choices = names(df_var_quanti)),
                    actionButton("plot_regression", "Tracer la régression")
                  ),
-                 mainPanel(plotOutput("regressionPlot")),
+                 mainPanel(
+                   plotOutput("regressionPlot"),
+                   textOutput("correlation_ratio")  # Display correlation ratio here
+                 ),
                  downloadButton("downloadPlot5", "Télécharger le Graphique")
         ),
         

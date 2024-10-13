@@ -368,35 +368,6 @@ function(input, output, session) {
   })
   
   
-  ################## Régression Linéaire ##################
-  
-  observeEvent(input$plot_regression, {
-    output$regressionPlot <- renderPlot({
-      x_data <- df_var_quanti[[input$x_axis]]
-      y_data <- df_var_quanti[[input$y_axis]]
-      
-      df_valid <- data.frame(x = x_data, y = y_data)
-      df_valid <- na.omit(df_valid)
-      
-      # Si x ou y sont des facteurs ou des variables qualitatives, les convertir en numériques
-      if (is.factor(df_valid$x) || is.character(df_valid$x)) {
-        df_valid$x <- as.numeric(factor(df_valid$x))
-      }
-      if (is.factor(df_valid$y) || is.character(df_valid$y)) {
-        df_valid$y <- as.numeric(factor(df_valid$y))
-      }
-      
-      # Effectuer la régression linéaire
-      fit <- lm(y ~ x, data = df_valid)
-      plot <- ggplot(df_valid, aes(x = x, y = y)) +
-        geom_point() +
-        geom_smooth(method = "lm", se = FALSE) +
-        labs(title = "Régression Linéaire", x = input$x_axis, y = input$y_axis)
-      regplot$plot_data <- plot  # Stocker le plot dans la variable réactive
-      plot
-      })
-  })
-  
   ################## Regression Plot with Correlation Ratio ##################
   observeEvent(input$plot_regression, {
     output$regressionPlot <- renderPlot({
