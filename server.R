@@ -1,3 +1,20 @@
+# Définir la fonction pour installer ou mettre à jour
+install_or_update <- function(packages) {
+  for (pkg in packages) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      install.packages(pkg)
+      message(paste(pkg, "a été installé."))
+    } else {
+      message(paste(pkg, "est déjà installé."))
+    }
+  }
+}
+
+# Liste des packages
+packages <- c("shiny", "httr", "jsonlite", "reactable", "ggplot2", "dplyr", "leaflet", "mapview", "plotly", "shinyjs", "shinydashboard")
+
+# Appeler la fonction
+install_or_update(packages)
 library(shiny)
 library(httr)
 library(jsonlite)

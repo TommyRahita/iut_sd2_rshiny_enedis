@@ -1,0 +1,12 @@
+name: iut_sd2_rshiny_enedis
+title: iut_sd2_rshiny_enedis
+username: ex1q74-tommy-rahita
+account: ex1q74-tommy-rahita
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 13002642
+bundleId: 9217597
+url: https://ex1q74-tommy-rahita.shinyapps.io/iut_sd2_rshiny_enedis/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

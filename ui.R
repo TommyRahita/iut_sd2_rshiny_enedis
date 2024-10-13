@@ -1,3 +1,20 @@
+# Définir la fonction pour installer ou mettre à jour
+install_or_update <- function(packages) {
+  for (pkg in packages) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      install.packages(pkg)
+      message(paste(pkg, "a été installé."))
+    } else {
+      message(paste(pkg, "est déjà installé."))
+    }
+  }
+}
+
+# Liste des packages
+packages <- c("shiny", "httr", "jsonlite", "reactable", "ggplot2", "dplyr", "leaflet", "mapview", "plotly", "shinyjs", "shinydashboard")
+
+# Appeler la fonction
+install_or_update(packages)
 library(shiny)
 library(httr)
 library(jsonlite)
@@ -90,22 +107,15 @@ fluidPage(
                             p("Permet de réaliser des régressions linéaires sur nos données.(exportaion .png)")
                           )),
                           column(4, wellPanel(
-                            h3("Corrélation"),
-                            p("Permet de vérifier la corrélation entre deux varibles quantitatives.")
-                          ))
-                        )
-                 ),
-                 column(12, 
-                        br(),
-                        fluidRow(
-                          column(4, wellPanel(
                             h3("Mise à jour"),
                             p("Permet la mise à jour des données.")
                           ))
                         )
-                 )
-        ), tags$div(style = "display: flex; justify-content: center; align-items: center; height: 90vh; margin: 0;",
-                   img(src = "dpe_image.jpeg", height = "100%", width = "100%", style = "border: none;"))
+  
+        ), 
+        ),
+        tags$div(style = "display: flex; justify-content: center; align-items: center; height: 90vh; margin: 0;",
+                 img(src = "dpe_image.jpeg", height = "100%", width = "100%", style = "border: none;"))
         ),
         
         # Onglet 2 : Données
@@ -200,17 +210,6 @@ fluidPage(
                    textOutput("correlation_ratio")  # Display correlation ratio here
                  ),
                  downloadButton("downloadPlot5", "Télécharger le Graphique")
-        ),
-        
-        # Onglet 7 : Corrélation
-        tabPanel("Corrélation",
-                 h1("Corrélation"),
-                 sidebarPanel(
-                   selectInput("var1", "Variable 1:", choices = names(df_var_quanti)),
-                   selectInput("var2", "Variable 2:", choices = names(df_var_quanti)),
-                   actionButton("lancer_corr", "Lancer la Corrélation")
-                 ),
-                 mainPanel(plotOutput("corr_plot"))
         ),
         
         # Onglet 8 : Mise à jour
