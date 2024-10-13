@@ -1,0 +1,188 @@
+---
+title: "rapport"
+author: "Hicham"
+date: "2024-10-13"
+output: html_document
+params:
+  code_postal: "69100" # Code postal par défaut
+  
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+library(knitr)
+```
+
+
+```{r chargement-donnees, include=FALSE}
+# Chargement des données
+adresses <- read.csv('C:/SAE R SHINY/adresses-69.csv')
+df_conso_cout <- read.csv('C:/SAE R SHINY/df_conso_cout.csv')
+df_filtered2 <- read.csv('C:/SAE R SHINY/df_filtered2.csv')
+df_labels <- read.csv('C:/SAE R SHINY/df_labels.csv')
+df_69 <- read.csv("C:/SAE R SHINY/df_69.csv", header = TRUE, dec = ".", sep = ",")
+
+```
+
+
+
+```{r filtrage, include=FALSE}
+# Paramètre du code postal
+code_postal <- as.character(params$code_postal)
+
+# Aperçu des données filtrées avec le nom exact de la colonne
+kable(head(df_filtered2 %>% filter(Code_postal_.BAN. == code_postal)))
+
+
+```
+
+#1. Indicateurs Clés de Performance (KPI)
+
+Les indicateurs clés de performance (KPI) suivants ont été calculés afin de comprendre les différentes dimensions de la consommation énergétique pour le code postal sélectionné. Les KPI sont des mesures quantitatives qui permettent d'évaluer l'efficacité énergétique à l'échelle locale.
+
+#1.1 Consommation Énergétique Moyenne
+
+Cet indicateur présente la consommation énergétique moyenne des foyers dans la zone d'étude sélectionnée. Cela permet de voir si la consommation est au-dessus ou en dessous de la moyenne nationale.
+
+```{r kpi-consommation-energetique, echo=FALSE}
+# Calcul et affichage de la consommation énergétique moyenne directement à partir de df_filtered2
+cat("Consommation énergétique moyenne :", 
+    mean(df_filtered2 %>% filter(Code_postal_.BAN. == code_postal) %>% 
+         pull(Conso_5_usages_é_finale), na.rm = TRUE), 
+    "kWh")
+
+
+```
+
+Commentaire : Une consommation moyenne élevée pourrait indiquer des inefficacités ou une forte dépendance énergétique dans la région, nécessitant des actions pour améliorer l'efficacité énergétique.
+
+
+#1.2 Répartition des Types de Chauffage
+
+Cette section présente un graphique illustrant la répartition des types de chauffage utilisés dans la région sélectionnée. Cela permet de mieux comprendre les choix énergétiques des foyers locaux.
+
+```{r kpi-cout, echo=FALSE}
+# Calcul et affichage du coût total moyen directement à partir de df_conso_cout
+cat("Coût moyen :", mean(df_conso_cout$Cout, na.rm = TRUE), "€")
+
+
+```
+
+Commentaire : Comprendre la répartition des types de chauffage peut aider à identifier des opportunités de transition vers des systèmes plus durables, en particulier dans les zones où les chauffages les moins efficaces sont surreprésentés.
+
+
+#1.3 Coût Total de la Consommation Énergétique
+
+Cet indicateur montre le coût total de la consommation énergétique pour les foyers situés dans le code postal analysé. C'est un KPI important pour évaluer l'impact financier de la consommation énergétique sur les ménages.
+
+```{r kpi-etiquettes-energetiques, echo=FALSE}
+# Graphique de la distribution des étiquettes énergétiques sans création d'une nouvelle variable
+ggplot(df_labels, aes(x = Categorie, y = Freq)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Distribution des Étiquettes Énergétiques", x = "Étiquette", y = "Fréquence")
+
+
+```
+
+Commentaire : Cet indicateur est crucial pour évaluer l'impact économique des habitudes de consommation des foyers et pour identifier les zones où des aides pourraient être nécessaires pour réduire les charges énergétiques.
+
+
+#2. Graphiques Additionnels
+
+#2.1 Répartition Géographique des Adresses
+
+Ce graphique présente une visualisation géographique des adresses des foyers situés dans le code postal sélectionné. Cela permet d'observer la répartition spatiale des foyers.
+
+```{r 1, echo=FALSE}
+# Calcul de la consommation énergétique moyenne à partir de df_filtered2
+consommation_moyenne <- mean(df_filtered2$Conso_5_usages_é_finale, na.rm = TRUE)
+cat("Consommation énergétique moyenne par logement :", consommation_moyenne, "kWh")
+
+```
+
+Commentaire : Ce graphique permet d’identifier les types de chauffage associés aux coûts les plus élevés, et d'envisager des alternatives plus économiques pour ces foyers.
+
+#2.2 Calcul de la Consommation Énergétique Moyenne
+
+```{r 2, echo=FALSE}
+# Calcul du coût total moyen par catégorie énergétique
+cout_moyen_par_categorie <- df_conso_cout %>%
+  group_by(Categorie) %>%
+  summarize(cout_moyen = mean(Cout, na.rm = TRUE))
+
+# Afficher les résultats sous forme de tableau
+kable(cout_moyen_par_categorie)
+
+```
+
+Commentaire : Ce calcul permet d'obtenir une vue d'ensemble de la consommation énergétique moyenne dans la zone étudiée. Une consommation élevée peut indiquer des inefficacités énergétiques qui pourraient être résolues par des interventions ciblées.
+
+#2.3 Calcul du Coût Moyen par Catégorie Énergétique
+
+```{r 3, echo=FALSE}
+# Calcul de l'émission moyenne de GES par m² à partir de df_69
+ges_moyen <- mean(df_69$Emission_GES_5_usages_par_m., na.rm = TRUE)
+cat("Émission moyenne de GES par m² :", ges_moyen, "kgCO2/m²")
+
+```
+
+Commentaire : Cette analyse permet de comparer les coûts énergétiques moyens par catégorie énergétique, ce qui peut aider à prioriser les efforts de rénovation et à soutenir les ménages en fonction de leur catégorie d'efficacité énergétique.
+
+#2.4 Calcul de la Corrélation entre la Surface Habitable et la Consommation Énergétique
+
+```{r 4, echo=FALSE}
+# Calcul de la corrélation entre la surface habitable et la consommation énergétique
+correlation_surface_conso <- cor(df_filtered2$Surface_habitable_logement, df_filtered2$Conso_5_usages_é_finale, use = "complete.obs")
+cat("Corrélation entre la surface habitable et la consommation énergétique :", correlation_surface_conso)
+
+```
+
+Commentaire : La corrélation entre la surface habitable et la consommation énergétique est importante pour comprendre si la consommation est proportionnelle à la taille du logement. Une corrélation forte indique que la surface est un facteur déterminant pour la consommation.
+
+#2.5 Calcul de la Consommation Énergétique Moyenne par Étiquette DPE
+
+
+```{r 5, echo=FALSE}
+# Calcul de la consommation énergétique moyenne par catégorie énergétique
+conso_par_etiquette <- df_filtered2 %>%
+  group_by(Etiquette_DPE) %>%
+  summarize(conso_moyenne = mean(Conso_5_usages_é_finale, na.rm = TRUE))
+
+# Afficher les résultats sous forme de tableau
+kable(conso_par_etiquette)
+
+```
+
+Commentaire : Ce tableau fournit des informations sur l'efficacité énergétique des logements en fonction de leur étiquette DPE. Il permet de comparer les consommations moyennes entre les différentes catégories, ce qui est crucial pour cibler des interventions spécifiques pour les logements les plus énergivores.
+
+#2.6 Calcul de la Consommation Énergétique Moyenne par Catégorie de Surface Habitable
+
+```{r 6, echo=FALSE}
+
+# Créer des catégories de surface habitable
+df_filtered2_clean <- df_filtered2 %>%
+  filter(!is.na(Surface_habitable_logement) & !is.na(Conso_5_usages_é_finale)) %>%
+  mutate(Surface_category = cut(Surface_habitable_logement, 
+                                breaks = seq(0, max(Surface_habitable_logement, na.rm = TRUE), by = 50)))
+
+# Calculer la consommation énergétique moyenne par catégorie de surface
+conso_par_surface <- df_filtered2_clean %>%
+  group_by(Surface_category) %>%
+  summarize(Conso_moyenne = mean(Conso_5_usages_é_finale, na.rm = TRUE))
+
+# Graphique en barres
+ggplot(conso_par_surface, aes(x = Surface_category, y = Conso_moyenne)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  labs(title = "Consommation énergétique moyenne par catégorie de surface habitable",
+       x = "Surface habitable (m²)", 
+       y = "Consommation moyenne (kWh)") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+```
+
+
